@@ -1,5 +1,6 @@
 import base64
 import platform
+import six
 from chargebee import APIError,PaymentError,InvalidRequestError,OperationFailedError, compat
 from chargebee.main import ChargeBee
 from chargebee.main import Environment
@@ -16,7 +17,8 @@ def request(method, url, env, params=None, headers=None):
         headers = {}
 
     url = env.api_url(url)
-    params = utf8_encode_dict(params)
+    if six.PY2:
+        params = utf8_encode_dict(params)
     if method.lower() in ('get', 'head', 'delete'):
         url = '%s?%s' % (url, compat.urlencode(params))
         payload = None
@@ -66,7 +68,7 @@ def process_response(url,response, http_code):
 
 def utf8_encode_dict(input):
     result = {}
-    for key, value in input.items():
+    for key, value in input.iteritems():
         if isinstance(value, unicode):
             value = value.encode('utf8')
         elif isinstance(value, dict):
