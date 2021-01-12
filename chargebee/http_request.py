@@ -40,8 +40,8 @@ def request(method, url, env, params=None, headers=None):
         if Environment.protocol == "https":
             connection = compat.HTTPSConnection(meta.netloc)
         else:
-            connection = compat.HTTPConnection(meta.netloc)    
-        
+            connection = compat.HTTPConnection(meta.netloc)
+
     connection.request(method.upper(), meta.path + '?' + meta.query, payload, headers)
     try:
         response = connection.getresponse()
@@ -57,7 +57,7 @@ def request(method, url, env, params=None, headers=None):
 def process_response(url,response, http_code):
     try:
         resp_json = compat.json.loads(response)
-    except Exception as ex:     
+    except Exception as ex:
         raise Exception("Response not in JSON format. Probably not a chargebee error. \n URL is " + url + "\n Content is \n" + response)
     if http_code < 200 or http_code > 299:
         handle_api_resp_error(url,http_code, resp_json)
@@ -66,7 +66,7 @@ def process_response(url,response, http_code):
 
 def utf8_encode_dict(input):
     result = {}
-    for key, value in input.iteritems():
+    for key, value in input.items():
         if isinstance(value, unicode):
             value = value.encode('utf8')
         elif isinstance(value, dict):
