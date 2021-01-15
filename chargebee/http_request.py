@@ -1,5 +1,6 @@
 import base64
 import platform
+import six
 from chargebee import APIError,PaymentError,InvalidRequestError,OperationFailedError, compat
 from chargebee.main import ChargeBee
 from chargebee.main import Environment
@@ -16,7 +17,8 @@ def request(method, url, env, params=None, headers=None):
         headers = {}
 
     url = env.api_url(url)
-    params = utf8_encode_dict(params)
+    if six.PY2:
+        params = utf8_encode_dict(params)
     if method.lower() in ('get', 'head', 'delete'):
         url = '%s?%s' % (url, compat.urlencode(params))
         payload = None
@@ -40,8 +42,8 @@ def request(method, url, env, params=None, headers=None):
         if Environment.protocol == "https":
             connection = compat.HTTPSConnection(meta.netloc)
         else:
-            connection = compat.HTTPConnection(meta.netloc)    
-        
+            connection = compat.HTTPConnection(meta.netloc)
+
     connection.request(method.upper(), meta.path + '?' + meta.query, payload, headers)
     try:
         response = connection.getresponse()
@@ -57,7 +59,7 @@ def request(method, url, env, params=None, headers=None):
 def process_response(url,response, http_code):
     try:
         resp_json = compat.json.loads(response)
-    except Exception as ex:     
+    except Exception as ex:
         raise Exception("Response not in JSON format. Probably not a chargebee error. \n URL is " + url + "\n Content is \n" + response)
     if http_code < 200 or http_code > 299:
         handle_api_resp_error(url,http_code, resp_json)
