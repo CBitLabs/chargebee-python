@@ -63,6 +63,7 @@ class VerifiedHTTPSConnection(HTTPSConnection):
 
         # Wrap socket using verification with the root certs in
         # trusted_root_certs
+        print(f"!! {ssl.wrap_socket.__code__}")
         self.sock = ssl.wrap_socket(sock, cert_reqs=self.cert_reqs, ca_certs=self.ca_certs)
 
         if self.ca_certs:
